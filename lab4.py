@@ -280,8 +280,8 @@ class MDPAgent(UncertainAgent):
         # 5. You can calculate the reward of a specific transition as a
         # result of a specific action with a specific result
         # 6. You have an estimate of the value of each result location
-        # TODO YOUR CODE HERE
-        raise NotImplementedError()
+        # DONE: YOUR CODE HERE
+        
         action = WizardMoves.RIGHT
 
         # When choosing an action, we must update our prior to account for
