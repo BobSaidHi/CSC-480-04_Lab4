@@ -290,7 +290,8 @@ class MDPAgent(UncertainAgent):
         best_value = float('-inf')
 
         # 2. Evaluate each possible action
-        for action in WizardMoves:
+        for action in [WizardMoves.UP, WizardMoves.DOWN, WizardMoves.LEFT,
+                       WizardMoves.RIGHT]:
             expectedValue = 0.0
 
             # Consider every possible location in the belief distribution
