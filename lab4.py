@@ -93,6 +93,7 @@ class MDP:
         # 4. Convert counts back to a probability distribution
         return resultCounts.normalize()
 
+
 class LocationValues:
     def __init__(self, mdp: MDP):
         self.mdp = mdp
@@ -281,8 +282,54 @@ class MDPAgent(UncertainAgent):
         # result of a specific action with a specific result
         # 6. You have an estimate of the value of each result location
         # DONE: YOUR CODE HERE
-        
-        action = WizardMoves.RIGHT
+        """
+        After updating belief from observation, choose the action with the 
+        highest expected value under the current belief.
+        """
+        action = WizardMoves.STAY
+        best_value = float('-inf')
+
+        # 2. Evaluate each possible action
+        for action in WizardMoves:
+            expectedValue = 0.0
+
+            # Consider every possible location in the belief distribution
+            for loc in self.current_position_estimate.locations():
+                beliefProb = self.current_position_estimate.probability(loc)
+
+                # What happens if we are at this location and take this action?
+                outcomeDist = self.mdp.transition_model(loc, action)
+
+                # Compute expected value of this action from this location
+                locationActionValue = 0.0
+                for outcomeLoc in outcomeDist.locations():
+                    outcomeProb = outcomeDist.probability(outcomeLoc)
+
+                    outcomeState = (
+                        self.mdp.game_state.replace_active_entity_location(
+                            outcomeLoc
+                        ))
+                    sourceState = (
+                        self.mdp.game_state.replace_active_entity_location(
+                            loc))
+
+                    reward = self.mdp.reward(sourceState, outcomeState,
+                                             action)
+                    futureValue = self.values.value_grid[outcomeLoc.row][
+                        outcomeLoc.col]
+
+                    locationActionValue += outcomeProb * (
+                            reward + self.mdp.discount * futureValue
+                    )
+
+                # Weight by how likely we think we are to be at loc
+                expectedValue += beliefProb * locationActionValue
+
+            if expectedValue > best_value:
+                best_value = expectedValue
+                action = action
+
+        # action = WizardMoves.RIGHT
 
         # When choosing an action, we must update our prior to account for
         # the new distribution as a result of the action being taken
