@@ -239,8 +239,10 @@ class MDPAgent(UncertainAgent):
 
         # The new distribution should be set for each location
         for loc in new_estimate.locations():
-            # TODO: YOUR CODE HERE
-            raise NotImplementedError()
+            # DONE: YOUR CODE HERE
+            prior = self.current_position_estimate.probability(loc)
+            likelihood = self.observation_likelihood(observation, loc)
+            new_estimate.update_probability(loc, prior * likelihood)
 
         new_estimate.renormalize()
         self.current_position_estimate = new_estimate
