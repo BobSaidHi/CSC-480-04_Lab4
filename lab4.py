@@ -21,7 +21,10 @@ class MDP:
         loc = target.active_entity_location
         if isinstance(target.tile_grid[loc.row][loc.col], Lava):
             return self.death_reward
-        elif target.victory:
+        # elif target.victory:
+        #     return self.escape_reward
+        # Alt reward logic for part 1 testing
+        elif isinstance(target.tile_grid[loc.row][loc.col], Portal):
             return self.escape_reward
         else:
             return self.living_reward
