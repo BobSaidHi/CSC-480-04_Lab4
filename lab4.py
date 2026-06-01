@@ -66,9 +66,32 @@ class MDP:
         The easiest way to do this will involve sampling.
         """
 
-        # TODO YOUR CODE HERE
-        raise NotImplementedError()
+        # DONE YOUR CODE HERE
+        # 1. Create a counter to accumulate results
+        resultCounts = LocationCounts(self.game_state.grid_size)
 
+        # 2. Number of samples - higher = more accurate but slower
+        NUM_SAMPLES = 1000
+
+        # 3. Draw samples from the source distribution (Monte Carlo
+        # approximation)
+        for i in range(NUM_SAMPLES):
+            # Sample a current location from the source distribution
+            currentLoc = source.sample()
+
+            # Get the transition model for this location and action
+            # This tells us where we might end up from current_loc when
+            # taking action
+            outcomeDistribution = self.transition_model(currentLoc, action)
+
+            # Sample an outcome location from that distribution
+            outcomeLoc = outcomeDistribution.sample()
+
+            # Record this outcome
+            resultCounts.add_count(outcomeLoc)
+
+        # 4. Convert counts back to a probability distribution
+        return resultCounts.normalize()
 
 class LocationValues:
     def __init__(self, mdp: MDP):
@@ -124,7 +147,7 @@ class LocationValues:
                 # Get valid actions from this location
                 source_state = (
                     self.mdp.game_state.replace_active_entity_location(
-                    loc))
+                        loc))
                 successors = GameTransitions.get_successors(source_state)
                 valid_actions = [action for action, _ in successors]
 
