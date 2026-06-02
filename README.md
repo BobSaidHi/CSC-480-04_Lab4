@@ -22,7 +22,7 @@ To get started make sure to install pyglet using the given `pyproject.toml` in o
 
 ## Files You Might Want to Read
 
-While these files are pretty similar to your previous assignments, there are some minor differences and it may be worth
+While these files are pretty similar to your previous assignments, there are some minor differences, and it may be worth
 refreshing your understandings.
 
 > `model.py`:  This contains the dungeon data models(ie `GameState`, `Location`, `LocationDistribution`,
@@ -71,7 +71,7 @@ for any location and action, `transition_model` returns a probability distributi
 ## `value_iteration_update`
 
 Implement one round of value iteration in `LocationValues.value_iteration_update`. This method should compute an
-entirely new value grid from the current one. For each non terminal location, compute the _Bellman update_:
+entirely new value grid from the current one. For each non-terminal location, compute the _Bellman update_:
 
 $$V_{k+1}(s) = \max_a \sum_{s'} T(s, a, s') \left[ R(s, a, s') + \gamma V_k(s') \right]$$
 
@@ -98,7 +98,7 @@ adjacent squares should have lower value and positions near the portal should be
 # Part 2: Navigating the Fog
 
 With value estimates in hand, the wizard enters the dungeon. But it cannot see where it is. All it receives each turn is
-an `Observation`, or a a noisy integer representing its approximate Manhattan distance to the portal. The noise can be
+an `Observation`, or a noisy integer representing its approximate Manhattan distance to the portal. The noise can be
 -1, 0, or +1 from the true distance, each equally likely.
 
 The wizard must maintain its belief about where it probably is, a probability distribution over all possible locations,
@@ -155,14 +155,23 @@ different? Why? (I will be asking you about this in the lab review).
 > Note: It occurs to me that when the wizard appears to be "distracted" it could just be bad luck with the
 > nondeterministic moving / transitions
 
-| `escape_reward` | `living_reward` | `death_reward` | `discount` | Victories | Defeats | Notes                                                                                                                                                                       |
-|-----------------|-----------------|----------------|------------|-----------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 100             | 0               | -50            | 0.9        | 0         | 5       | Several quick fails and a few slower ones, sometimes oscilats about the starting corner a bit                                                                               |
-| 100             | 50              | -50            | 0.9        | 0         | 5       | Surived much longer on average but still oscialted a lot. Empty tiles were ranked highly, between 499~500                                                                   |
-| 100             | 10              | -50            | 0.9        | 1         | 4       | Surived much longer on once but oscialted even more and failed other times. Empty tiles were still ranked highly, more so than the portal, but not as high as before        |
-| 150             | 25              | -50            | 0.9        | 0         | 5       | Rapid defeat, tried to take the risky path                                                                                                                                  |
-| 100             | 25              | -50            | 0.9        | 0         | 4       | Surived much longer on but oscialted even more and failed once due to 60s timeout. Empty tiles were still ranked highly, more so than the portal, but not as high as before |
-| 100             | 25              | -50            | 0.9        | 1         | 4       | Clarrifed that the wizard may not stand still, suceeded on risky path, suceeed on riksy path only to get distracted and wander around for a bit, timed out once             |
+| `escape_reward` | `living_reward` | `death_reward` | `discount` | `value_iteration_steps` | Victories | Defeats | Notes                                                                                                                                                                       |
+|-----------------|-----------------|----------------|------------|-------------------------|-----------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 100             | 0               | -50            | 0.9        | 100                     | 0         | 5       | Several quick fails and a few slower ones, sometimes oscilats about the starting corner a bit                                                                               |
+| 100             | 50              | -50            | 0.9        | 100                     | 0         | 5       | Surived much longer on average but still oscialted a lot. Empty tiles were ranked highly, between 499~500                                                                   |
+| 100             | 10              | -50            | 0.9        | 100                     | 1         | 4       | Surived much longer on once but oscialted even more and failed other times. Empty tiles were still ranked highly, more so than the portal, but not as high as before        |
+| 150             | 25              | -50            | 0.9        | 100                     | 0         | 5       | Rapid defeat, tried to take the risky path                                                                                                                                  |
+| 100             | 25              | -50            | 0.9        | 100                     | 0         | 4       | Surived much longer on but oscialted even more and failed once due to 60s timeout. Empty tiles were still ranked highly, more so than the portal, but not as high as before |
+| 100             | 25              | -50            | 0.9        | 100                     | 1         | 4       | Clarrifed that the wizard may not stand still, suceeded on risky path, suceeed on riksy path only to get distracted and wander around for a bit, timed out once             |
+| 100             | 0               | -300           | 0.7        | 100                     | 0         | 5       | "you should be able to succeed a little over a  third  of the time"                                                                                                         |
+| 100             | 0               | -300           | 0.7        | 500                     | 0         | 5       | "86.0% (43/50) escape rate,  25.9 Avg turns, IQR: 20.8, 29.0"                                                                                                               |
+| 100             | 25              | -100           | 0.9        | 100                     | 1         | 4       |                                                                                                                                                                             |
+| 100             | 20              | -100           | 0.9        | 100                     | 3         | 7       |                                                                                                                                                                             |
+| 100             | 20              | -150           | 0.9        | 100                     | 1         | 4       | Got distracteed and took awhile on safe route once                                                                                                                          |
+| 100             | 20              | -150           | 0.9        | 200                     | 4         | 6       |                                                                                                                                                                             |
+| 100             | 0               | -200           | 0.9        | 200                     | 1         | 4       | Still unexpectly takes risky path                                                                                                                                           |
+| 100             | 1               | -200           | 0.9        | 200                     | 2         | 8       |                                                                                                                                            |
+
 
 --- 
 
